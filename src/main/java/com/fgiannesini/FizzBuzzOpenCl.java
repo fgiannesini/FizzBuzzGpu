@@ -1,10 +1,9 @@
 package com.fgiannesini;
 
+import com.fgiannesini.opencl.*;
 import org.jocl.*;
 
-import java.util.Arrays;
-
-public class OpenClFizzBuzz {
+public class FizzBuzzOpenCl {
     private static final String programSource =
             """
                     __kernel void

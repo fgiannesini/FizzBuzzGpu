@@ -1,4 +1,4 @@
-package com.fgiannesini;
+package com.fgiannesini.opencl;
 
 import org.jocl.*;
 
