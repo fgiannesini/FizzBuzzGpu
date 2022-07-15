@@ -8,18 +8,24 @@ public class OpenClFizzBuzz {
     private static final String programSource =
             """
                     __kernel void
-                    sampleKernel(__global const int *a,
-                                 __global const int *b,
-                                 __global int *c)
+                    computeFizzBuzz(__global const int *input,
+                                 __global int *destination)
                     {
                         int gid = get_global_id(0);
-                        c[gid] = a[gid] + b[gid];
+                        int result = input[gid];
+                        if (result % 3 == 0 && result % 5 == 0) {
+                            result = -3;
+                        } else if (result % 3 == 0) {
+                            result = -1;
+                        } else if (result % 5 == 0) {
+                            result = -2;
+                        }
+                        destination[gid] = result;
                     }
                     """;
 
-    public int[] run(int[] srcArrayA) {
-        int n = srcArrayA.length;
-        int[] srcArrayB = Arrays.copyOf(srcArrayA, n);
+    public int[] run(int[] srcArray) {
+        int inputSize = srcArray.length;
 
         CL.setExceptionsEnabled(true);
 
@@ -27,17 +33,15 @@ public class OpenClFizzBuzz {
                 Context context = Context.getInstance();
                 CommandQueue commandQueue = CommandQueue.from(context);
                 Program program = Program.from(context, programSource);
-                Kernel kernel = Kernel.from(program, "sampleKernel");
-                MemObjectToRead memObjectsA = MemObjectToRead.memObjectToRead(context, srcArrayA);
-                MemObjectToRead memObjectsB = MemObjectToRead.memObjectToRead(context, srcArrayB);
-                MemObjectToWrite memObjectsC = MemObjectToWrite.memObjectToWrite(context, n)
+                Kernel kernel = Kernel.from(program, "computeFizzBuzz");
+                MemObjectToRead memObjectsA = MemObjectToRead.memObjectToRead(context, srcArray);
+                MemObjectToWrite memObjectsC = MemObjectToWrite.memObjectToWrite(context, inputSize)
         ) {
             kernel.addArgument(memObjectsA, 0);
-            kernel.addArgument(memObjectsB, 1);
-            kernel.addArgument(memObjectsC, 2);
+            kernel.addArgument(memObjectsC, 1);
 
-            commandQueue.executeKernel(kernel, n);
-            return commandQueue.readData(memObjectsC, n);
+            commandQueue.executeKernel(kernel, inputSize);
+            return commandQueue.readData(memObjectsC, inputSize);
         }
     }
 
