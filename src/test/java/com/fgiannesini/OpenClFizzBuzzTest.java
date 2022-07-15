@@ -10,13 +10,11 @@ class OpenClFizzBuzzTest {
 
     @Test
     void should_compute_fizz_buzz_on_gpu_using_opencl() {
-        int n = 10;
-        float[] srcArray = new float[n];
-        IntStream.range(0, n).forEach(i -> srcArray[i] = i);
-        float[] destArray = new OpenClFizzBuzz().run(srcArray);
+        int n = 16;
+        int[] srcArray = IntStream.range(0, n).toArray();
+        int[] destArray = new OpenClFizzBuzz().run(srcArray);
 
-        float[] expectedArray = new float[n];
-        IntStream.range(0, n).forEach(i -> expectedArray[i] = i * 2);
+        int[] expectedArray = IntStream.range(0, n).map(i -> i * 2).toArray();
         assertArrayEquals(expectedArray, destArray);
     }
 }

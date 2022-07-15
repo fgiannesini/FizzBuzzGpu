@@ -8,18 +8,18 @@ public class OpenClFizzBuzz {
     private static final String programSource =
             """
                     __kernel void
-                    sampleKernel(__global const float *a,
-                                 __global const float *b,
-                                 __global float *c)
+                    sampleKernel(__global const int *a,
+                                 __global const int *b,
+                                 __global int *c)
                     {
                         int gid = get_global_id(0);
                         c[gid] = a[gid] + b[gid];
                     }
                     """;
 
-    public float[] run(float[] srcArrayA) {
+    public int[] run(int[] srcArrayA) {
         int n = srcArrayA.length;
-        float[] srcArrayB = Arrays.copyOf(srcArrayA, n);
+        int[] srcArrayB = Arrays.copyOf(srcArrayA, n);
 
         CL.setExceptionsEnabled(true);
 
@@ -96,8 +96,8 @@ public class OpenClFizzBuzz {
             CL.clEnqueueNDRangeKernel(commandQueue, kernel.kernel, 1, null, global_work_size, local_work_size, 0, null, null);
         }
 
-        public float[] readData(MemObjectToWrite memObject, int destinationLength) {
-            float[] destination = new float[destinationLength];
+        public int[] readData(MemObjectToWrite memObject, int destinationLength) {
+            int[] destination = new int[destinationLength];
             long size = (long) Sizeof.cl_float * destinationLength;
             CL.clEnqueueReadBuffer(commandQueue, memObject.getMemObject(), CL.CL_TRUE, 0, size, Pointer.to(destination), 0, null, null);
             return destination;
@@ -159,12 +159,12 @@ public class OpenClFizzBuzz {
 
     public static class MemObjectToRead extends MemObject {
 
-        public static MemObjectToRead memObjectToRead(Context context, float[] src) {
+        public static MemObjectToRead memObjectToRead(Context context, int[] src) {
             return new MemObjectToRead(context, src);
         }
 
-        private MemObjectToRead(Context context, float[] src) {
-            super(CL.clCreateBuffer(context.context, CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR, (long) Sizeof.cl_float * src.length, Pointer.to(src), null));
+        private MemObjectToRead(Context context, int[] src) {
+            super(CL.clCreateBuffer(context.context, CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR, (long) Sizeof.cl_int * src.length, Pointer.to(src), null));
         }
 
     }
@@ -176,7 +176,7 @@ public class OpenClFizzBuzz {
         }
 
         private MemObjectToWrite(cl_context context, int length) {
-            super(CL.clCreateBuffer(context, CL.CL_MEM_READ_WRITE, (long) Sizeof.cl_float * length, null, null));
+            super(CL.clCreateBuffer(context, CL.CL_MEM_READ_WRITE, (long) Sizeof.cl_int * length, null, null));
         }
 
         public cl_mem getMemObject() {
