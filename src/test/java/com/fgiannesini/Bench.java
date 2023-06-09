@@ -14,7 +14,7 @@ import java.util.random.RandomGenerator;
 public class Bench {
 
     private int[] data() {
-        return RandomGenerator.getDefault().ints(8_000_000, 0, Integer.MAX_VALUE).toArray();
+        return RandomGenerator.getDefault().ints(800_000_000, 0, Integer.MAX_VALUE).toArray();
     }
 
     @Benchmark

@@ -8,7 +8,7 @@ import org.jocl.cl_command_queue;
 public record CommandQueue(cl_command_queue commandQueue) implements AutoCloseable {
 
     public static CommandQueue from(Context context) {
-        return new CommandQueue(CL.clCreateCommandQueue(context.context(), context.device(), 0, null));
+        return new CommandQueue(CL.clCreateCommandQueueWithProperties(context.context(), context.device(), null, null));
     }
 
     public void executeKernel(Kernel kernel, int size) {
